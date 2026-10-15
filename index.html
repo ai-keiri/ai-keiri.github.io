@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>数字ページ</title>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6a66; --line: #e4e2dc;
+    --accent: #1f5f8b; --good: #2e7d4f; --bad: #b3402e; --warn: #a76a00; --bar: #c9d8e4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151514; --card: #1f1f1d; --ink: #ecebe6; --sub: #9b9a94; --line: #33322f;
+      --accent: #7fb3d9; --good: #6cc495; --bad: #ef8a77; --warn: #e2b04f; --bar: #2f4658;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; }
+  header h1 { font-size: 18px; margin: 4px 0 2px; }
+  header p { margin: 0; color: var(--sub); font-size: 12px; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0 4px; -webkit-overflow-scrolling: touch; }
+  .chip { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+  h2 { font-size: 13px; color: var(--sub); font-weight: 600; margin: 0 0 10px; letter-spacing: .02em; }
+  .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .kpi .big { grid-column: 1 / -1; }
+  .kpi .label { font-size: 12px; color: var(--sub); }
+  .kpi .val { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .kpi .big .val { font-size: 28px; }
+  .neg { color: var(--bad); }
+  .pos { color: var(--good); }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; }
+  .row .name { font-weight: 600; }
+  .row .tag { font-size: 11px; color: var(--sub); }
+  .row .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .row .rates { grid-column: 1 / -1; font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
+  .alert { border-color: var(--warn); }
+  .alert h2 { color: var(--warn); }
+  .alert li { font-size: 13px; margin-bottom: 4px; }
+  .empty { color: var(--sub); font-size: 13px; }
+  svg text { fill: var(--sub); font-size: 10px; }
+  .note { font-size: 11px; color: var(--sub); margin-top: 16px; }
+  .pending { color: var(--warn); font-size: 12px; margin: 0 0 8px; }
+  .money .pending { margin: 0; font-weight: 600; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+  let D = { error: '読み込み中…' };
+  const app = document.getElementById('app');
+  const yen = v => v == null ? '—' : (v < 0 ? '-' : '') + '¥' + Math.round(Math.abs(v)).toLocaleString('ja-JP');
+  const pct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const monthLabel = m => { const [y, mm] = m.split('-'); return y + '年' + Number(mm) + '月' + (m === D.thisMonth ? '（途中）' : ''); };
+  // 確定した店の数の説明（全部確定なら空）
+  const closedNote = r => r.closed == null || r.stores == null || r.closed === r.stores ? '' :
+    r.closed === 0 ? '締め前のため、利益はまだ出せません（売上のみ）' :
+    '利益と率は、締まった' + r.closed + '/' + r.stores + '店の合計です';
+
+  let state = { month: null, biz: '全事業' };
+
+  function render() {
+    if (D.error) { app.innerHTML = '<p class="empty" style="padding:40px 0">' + esc(D.error) + '</p>'; return; }
+    const months = [...new Set(D.metrics.map(r => r.month))].sort().reverse();
+    if (!months.length) { app.innerHTML = '<p class="empty" style="padding:40px 0">まだ数字がありません。</p>'; return; }
+    if (!state.month) state.month = months[0];
+    const inMonth = D.metrics.filter(r => r.month === state.month);
+    const total = inMonth.find(r => r.kind === '全店') || {};
+    const bizRows = inMonth.filter(r => r.kind === '事業');
+    const stores = inMonth.filter(r => r.kind === '店舗' && (state.biz === '全事業' || r.biz === state.biz))
+      .sort((a, b) => (b.profit ?? -Infinity) - (a.profit ?? -Infinity));
+    const probs = D.problems.filter(p => p.month === state.month);
+
+    let h = '<header><h1>' + esc(D.company) + '</h1><p>更新：' + esc(D.updated || '—') +
+      (D.paused ? '　・自動更新は停止中' : '') + '</p></header>';
+    h += '<div class="chips" role="group" aria-label="月">' + months.map(m =>
+      '<button class="chip" data-month="' + m + '" aria-pressed="' + (m === state.month) + '">' + monthLabel(m) + '</button>').join('') + '</div>';
+
+    if (probs.length) {
+      h += '<section class="alert"><h2>読めなかった所 ' + probs.length + '件（下の数字に入っていない可能性）</h2><ul>' +
+        probs.map(p => '<li>' + esc(p.store) + '：' + esc(p.text) + '</li>').join('') + '</ul></section>';
+    }
+
+    const tn = closedNote(total);
+    h += '<section><h2>全店　' + monthLabel(state.month) + '</h2>' +
+      (tn ? '<p class="pending">' + esc(tn) + '</p>' : '') + '<div class="kpi">' +
+      '<div class="big"><div class="label">売上</div><div class="val">' + yen(total.sales) + '</div></div>' +
+      '<div><div class="label">営業利益</div><div class="val ' + (total.profit < 0 ? 'neg' : '') + '">' + yen(total.profit) + '</div></div>' +
+      '<div><div class="label">営業利益率</div><div class="val">' + pct(total.profitRate) + '</div></div>' +
+      '<div><div class="label">原価率</div><div class="val">' + pct(total.costRate) + '</div></div>' +
+      '<div><div class="label">人件費率</div><div class="val">' + pct(total.laborRate) + '</div></div>' +
+      '</div></section>';
+
+    h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months) + '</section>';
+
+    h += '<section><h2>事業ごと</h2>' + (bizRows.length ? bizRows.map(rowHtml).join('') : '<p class="empty">なし</p>') + '</section>';
+
+    const bizNames = ['全事業', ...bizRows.map(r => r.name)];
+    h += '<section><h2>店舗ごと（営業利益の多い順・締め前は下）</h2><div class="chips" role="group" aria-label="事業">' +
+      bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '" aria-pressed="' + (b === state.biz) + '">' + esc(b) + '</button>').join('') +
+      '</div>' + (stores.length ? stores.map(rowHtml).join('') : '<p class="empty">なし</p>') + '</section>';
+
+    h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。率はまとめスプシの式で計算しています。</p>';
+    app.innerHTML = h;
+    app.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.month = b.dataset.month; render(); });
+    app.querySelectorAll('[data-biz]').forEach(b => b.onclick = () => { state.biz = b.dataset.biz; render(); });
+  }
+
+  function rowHtml(r) {
+    const pending = r.closed === 0;
+    const note = r.kind === '店舗' || pending ? '' : closedNote(r);
+    return '<div class="row"><div><div class="name">' + esc(r.name) + '</div>' +
+      (r.kind === '店舗' ? '<div class="tag">' + esc(r.biz) + '</div>' : '') + '</div>' +
+      '<div class="money"><div>' + yen(r.sales) + '</div>' +
+      (pending ? '<div class="pending">締め前</div>' : '<div class="' + (r.profit < 0 ? 'neg' : 'pos') + '">' + yen(r.profit) + '</div>') + '</div>' +
+      '<div class="rates">' + (pending ? '売上のみ（家賃・社員給などがまだ入っていない月）' :
+        '利益率 ' + pct(r.profitRate) + '　原価率 ' + pct(r.costRate) + '　人件費率 ' + pct(r.laborRate)) +
+      (note ? '<br>' + esc(note) : '') + '</div></div>';
+  }
+
+  // 全店の売上（棒）と営業利益（点）。表示のための縮尺だけで、数字の計算はしない
+  function trend(months) {
+    const rows = months.slice().reverse().map(m => D.metrics.find(r => r.month === m && r.kind === '全店') || { month: m });
+    const W = 320, H = 140, pad = 22, n = rows.length;
+    const vals = rows.flatMap(r => [r.sales, r.profit]).filter(v => v != null);
+    const max = Math.max(1, ...vals), min = Math.min(0, ...vals);
+    const y = v => pad + (H - pad * 2) * (max - v) / (max - min);
+    const bw = Math.min(36, (W - 20) / n * 0.6);
+    const x = i => 10 + (W - 20) * (i + 0.5) / n;
+    let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="月ごとの売上と営業利益">';
+    s += '<line x1="0" x2="' + W + '" y1="' + y(0) + '" y2="' + y(0) + '" stroke="var(--line)"/>';
+    rows.forEach((r, i) => {
+      if (r.sales != null) s += '<rect x="' + (x(i) - bw / 2) + '" y="' + y(Math.max(r.sales, 0)) + '" width="' + bw + '" height="' + Math.abs(y(r.sales) - y(0)) + '" rx="3" fill="var(--bar)"/>';
+      if (r.profit != null && r.closed === r.stores) s += '<circle cx="' + x(i) + '" cy="' + y(r.profit) + '" r="4" fill="' + (r.profit < 0 ? 'var(--bad)' : 'var(--good)') + '"/>';
+      s += '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + Number(r.month.split('-')[1]) + '月</text>';
+    });
+    s += '</svg><p class="empty" style="margin:4px 0 0">棒＝売上　●＝営業利益（全店が締まった月だけ）</p>';
+    return s;
+  }
+
+  // 数字はGoogle（仕組み側）から合言葉つきで取りに行く。Googleのログイン状態は使わない（credentials: 'omit'）
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycby0GyzCuRha1ICLDh-Hd7aDqnNJH2YTVQ0HbVH030acBOlGZRIU8P_ULMYo5bE8lUks/exec";
+  async function load() {
+    render();
+    const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const co = h.get('co'), pw = h.get('pw');
+    if (!co || !pw) { D = { error: 'ページのアドレスが正しくありません' }; render(); return; }
+    try {
+      const r = await fetch(ENDPOINT + '?out=json&co=' + encodeURIComponent(co) + '&pw=' + encodeURIComponent(pw), { credentials: 'omit' });
+      D = await r.json();
+      if (D.company) document.title = D.company + ' 数字';
+    } catch (e) {
+      D = { error: '数字を読み込めませんでした。通信状態を確かめて、もう一度開いてください' };
+    }
+    render();
+  }
+  load();
+</script>
+</body>
+</html>
