@@ -50,6 +50,23 @@
   .note { font-size: 11px; color: var(--sub); margin-top: 16px; }
   .pending { color: var(--warn); font-size: 12px; margin: 0 0 8px; }
   .money .pending { margin: 0; font-weight: 600; }
+  /* PC（横幅が広い画面）：2列に並べて一覧性を上げる */
+  @media (min-width: 900px) {
+    main { max-width: 1160px; padding: 24px 32px 64px; }
+    header h1 { font-size: 22px; }
+    .top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+    .top > section { margin-top: 12px; }
+    .kpi { grid-template-columns: repeat(4, 1fr); }
+    .kpi .val { font-size: 22px; }
+    .kpi .big .val { font-size: 34px; }
+    .list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+    .list .row:nth-child(2) { border-top: 0; }
+    section { padding: 18px 20px; }
+  }
+  @media (min-width: 1300px) {
+    .list.stores { grid-template-columns: 1fr 1fr 1fr; }
+    .list.stores .row:nth-child(3) { border-top: 0; }
+  }
 </style>
 </head>
 <body>
@@ -91,7 +108,7 @@
     }
 
     const tn = closedNote(total);
-    h += '<section><h2>全店　' + monthLabel(state.month) + '</h2>' +
+    h += '<div class="top"><section><h2>全店　' + monthLabel(state.month) + '</h2>' +
       (tn ? '<p class="pending">' + esc(tn) + '</p>' : '') + '<div class="kpi">' +
       '<div class="big"><div class="label">売上</div><div class="val">' + yen(total.sales) + '</div></div>' +
       '<div><div class="label">営業利益</div><div class="val ' + (total.profit < 0 ? 'neg' : '') + '">' + yen(total.profit) + '</div></div>' +
@@ -100,14 +117,14 @@
       '<div><div class="label">人件費率</div><div class="val">' + pct(total.laborRate) + '</div></div>' +
       '</div></section>';
 
-    h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months) + '</section>';
+    h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months) + '</section></div>';
 
-    h += '<section><h2>事業ごと</h2>' + (bizRows.length ? bizRows.map(rowHtml).join('') : '<p class="empty">なし</p>') + '</section>';
+    h += '<section><h2>事業ごと</h2>' + (bizRows.length ? '<div class="list">' + bizRows.map(rowHtml).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
     const bizNames = ['全事業', ...bizRows.map(r => r.name)];
     h += '<section><h2>店舗ごと（営業利益の多い順・締め前は下）</h2><div class="chips" role="group" aria-label="事業">' +
       bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '" aria-pressed="' + (b === state.biz) + '">' + esc(b) + '</button>').join('') +
-      '</div>' + (stores.length ? stores.map(rowHtml).join('') : '<p class="empty">なし</p>') + '</section>';
+      '</div>' + (stores.length ? '<div class="list stores">' + stores.map(rowHtml).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
     h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。率はまとめスプシの式で計算しています。</p>';
     app.innerHTML = h;
