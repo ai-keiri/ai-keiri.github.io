@@ -50,6 +50,9 @@
   .note { font-size: 11px; color: var(--sub); margin-top: 16px; }
   .pending { color: var(--warn); font-size: 12px; margin: 0 0 8px; }
   .money .pending { margin: 0; font-weight: 600; }
+  .split .bar { height: 10px; border-radius: 999px; background: var(--warn); overflow: hidden; margin: 6px 0; }
+  .split .bar span { display: block; height: 100%; background: var(--accent); }
+  .splitrow { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; font-variant-numeric: tabular-nums; }
   /* PC（横幅が広い画面）：2列に並べて一覧性を上げる */
   @media (min-width: 900px) {
     main { max-width: 1160px; padding: 24px 32px 64px; }
@@ -115,6 +118,11 @@
       '<div><div class="label">営業利益率</div><div class="val">' + pct(total.profitRate) + '</div></div>' +
       '<div><div class="label">原価率</div><div class="val">' + pct(total.costRate) + '</div></div>' +
       '<div><div class="label">人件費率</div><div class="val">' + pct(total.laborRate) + '</div></div>' +
+      (total.inStore != null ? '<div class="big split"><div class="label">売上の内訳（デリバリーは手数料を引いた後）</div>' +
+        '<div class="bar"><span style="width:' + (100 - (total.deliveryRate || 0) * 100) + '%"></span></div>' +
+        '<div class="splitrow"><span>店舗内 ' + yen(total.inStore) + '（' + pct(total.deliveryRate == null ? null : 1 - total.deliveryRate) + '）</span>' +
+        '<span>デリバリー ' + yen(total.delivery) + '（' + pct(total.deliveryRate) + '）</span></div>' +
+        (total.deliveryOrders ? '<div class="label">デリバリーの注文額（手数料前）' + yen(total.deliveryOrders) + '</div>' : '') + '</div>' : '') +
       '</div></section>';
 
     h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months) + '</section></div>';
@@ -141,6 +149,7 @@
       (pending ? '<div class="pending">締め前</div>' : '<div class="' + (r.profit < 0 ? 'neg' : 'pos') + '">' + yen(r.profit) + '</div>') + '</div>' +
       '<div class="rates">' + (pending ? '売上のみ（家賃・社員給などがまだ入っていない月）' :
         '利益率 ' + pct(r.profitRate) + '　原価率 ' + pct(r.costRate) + '　人件費率 ' + pct(r.laborRate)) +
+      (r.deliveryRate ? '<br>デリバリー ' + pct(r.deliveryRate) + '（' + yen(r.delivery) + '）' : '') +
       (note ? '<br>' + esc(note) : '') + '</div></div>';
   }
 
