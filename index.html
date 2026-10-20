@@ -204,7 +204,7 @@
 
   // 見ている人ごとの設定（決算月）。この端末のブラウザにだけ覚える。読めなくても動く
   const KEY = 'aikeiri.settings.' + (D.company || '');
-  let settings = { fyEnd: 3 };
+  let settings = { fyEnd: 12 }; // 決算月の初期値（ミスターXは不明のため12月、2026-10-20 皓亮）
   try { Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
   const saveSettings = () => { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} };
 
