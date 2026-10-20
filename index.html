@@ -118,6 +118,7 @@
   let state = { month: null, biz: '全事業' };
 
   function render() {
+    if (D.error === '読み込み中…') { app.innerHTML = '<div class="hero" style="padding-bottom:80px"><div class="wrap"><div class="cap">数字を読み込んでいます…（10秒ほどかかります）</div><div class="amount num" style="opacity:.35">¥ ‐‐‐,‐‐‐,‐‐‐</div></div></div>'; return; }
     if (D.error) { app.innerHTML = '<main style="margin-top:0"><p class="empty" style="padding:40px 0">' + esc(D.error) + '</p></main>'; return; }
     const months = [...new Set(D.metrics.map(r => r.month))].sort().reverse();
     if (!months.length) { app.innerHTML = '<main style="margin-top:0"><p class="empty" style="padding:40px 0">まだ数字がありません。</p></main>'; return; }
