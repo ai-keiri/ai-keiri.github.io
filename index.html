@@ -113,9 +113,11 @@
   .row:active { transform: scale(.99); }
   .row:first-of-type { border-top-color: transparent; }
   .row .name { font-weight: 700; }
-  .row .tag { display: inline-block; font-size: 10px; color: var(--accent);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), color-mix(in srgb, var(--accent2) 10%, transparent));
-    border-radius: 6px; padding: 1px 7px; margin-top: 2px; }
+  .row .tag { display: inline-block; font-size: 10px; font-weight: 600; color: #fff; background: var(--bz, var(--grad));
+    border-radius: 6px; padding: 2px 8px; margin-top: 3px; box-shadow: 0 2px 6px var(--bzs, rgba(63, 116, 214, .25)); }
+  .chip[data-biz] .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--bz); margin-right: 6px; vertical-align: 1px; }
+  .chip[data-biz][aria-pressed="true"] { background: var(--bz, var(--grad)); box-shadow: 0 4px 12px var(--bzs, rgba(63, 116, 214, .3)); }
+  .chip[data-biz][aria-pressed="true"] .dot { background: rgba(255, 255, 255, .85); }
   .row .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; }
   .row .money > div + div { font-size: 13px; font-weight: 600; }
   .row .rates { grid-column: 1 / -1; font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
@@ -207,6 +209,26 @@
   let settings = { fyEnd: 12 }; // 決算月の初期値（ミスターXは不明のため12月、2026-10-20 皓亮）
   try { Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
   const saveSettings = () => { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} };
+
+  // 事業ごとの色（グラデーション）。全期間の売上が大きい事業から順に割り当てるので、会社が変わっても使える
+  const BIZ_COLORS = [
+    ['linear-gradient(135deg, #2f6fd6, #3cc2d9)', 'rgba(47, 111, 214, .3)'],   // 青→水色
+    ['linear-gradient(135deg, #8b5cf6, #ec6fb0)', 'rgba(160, 90, 220, .3)'],   // むらさき→ピンク
+    ['linear-gradient(135deg, #f08a3c, #f6c15b)', 'rgba(240, 140, 60, .3)'],   // オレンジ→こはく
+    ['linear-gradient(135deg, #1f9e7a, #8fd16a)', 'rgba(31, 158, 122, .3)'],   // 緑→黄緑
+    ['linear-gradient(135deg, #e0565b, #f39a6b)', 'rgba(224, 86, 91, .3)'],    // 赤→さんご
+    ['linear-gradient(135deg, #4b5ab8, #8a9cf0)', 'rgba(75, 90, 184, .3)'],    // あい→ラベンダー
+  ];
+  let bizRank = null;
+  const bizList = () => {
+    if (bizRank) return bizRank;
+    const t = {}; (D.metrics || []).filter(r => r.kind === '事業').forEach(r => { t[r.name] = (t[r.name] || 0) + (r.sales || 0); });
+    const list = Object.keys(t).sort((a, b) => t[b] - t[a]);
+    if (list.length) bizRank = list;
+    return list;
+  };
+  const bizStyle = b => { const i = bizList().indexOf(b); if (i < 0) return ''; const c = BIZ_COLORS[i % BIZ_COLORS.length];
+    return ' style="--bz:' + c[0] + ';--bzs:' + c[1] + '"'; };
 
   let state = { mode: 'month', month: null, fy: null, from: null, to: null, biz: '全事業' };
 
@@ -330,7 +352,7 @@
     const bizNames = ['全事業', ...bizNamesAll];
     if (!bizNames.includes(state.biz)) state.biz = '全事業';
     h += '<section><h2>店舗ごと<span class="hint">営業利益の多い順・締め前は下</span></h2><div class="chips" role="group" aria-label="事業" style="padding-top:0;margin-bottom:6px">' +
-      bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '" aria-pressed="' + (b === state.biz) + '">' + esc(b) + '</button>').join('') +
+      bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '"' + bizStyle(b) + ' aria-pressed="' + (b === state.biz) + '">' + (b === '全事業' ? '' : '<span class="dot"></span>') + esc(b) + '</button>').join('') +
       '</div>' + (stores.length ? '<div class="list stores">' + stores.map(r => rowHtml(r, multi)).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
     h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。月ごとの率はまとめスプシの式で計算し、期や期間の数字は月の金額を足して割り直しています。</p></main>';
@@ -397,7 +419,7 @@
     const pending = r.closed === 0;
     const note = r.kind === '店舗' && !multi || pending ? '' : closedNote(r, multi);
     return '<div class="row"><div><div class="name">' + esc(r.name) + '</div>' +
-      (r.kind === '店舗' ? '<div class="tag">' + esc(r.biz) + '</div>' : '') + '</div>' +
+      (r.kind === '店舗' ? '<div class="tag"' + bizStyle(r.biz) + '>' + esc(r.biz) + '</div>' : '') + '</div>' +
       '<div class="money num"><div>' + yen(r.sales) + '</div>' +
       (pending ? '<div class="pending">締め前</div>' : '<div class="' + (r.profit < 0 ? 'neg' : 'pos') + '">' + yen(r.profit) + '</div>') + '</div>' +
       '<div class="rates">' + (pending ? '売上のみ（家賃・社員給などがまだ入っていない' + (multi ? '期間' : '月') + '）' :
