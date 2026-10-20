@@ -7,73 +7,102 @@
 <title>数字ページ</title>
 <meta charset="utf-8">
 <style>
+  /* 銀行アプリ風：紺の帯に大きな数字、下に白いカード */
   :root {
-    --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6a66; --line: #e4e2dc;
-    --accent: #1f5f8b; --good: #2e7d4f; --bad: #b3402e; --warn: #a76a00; --bar: #c9d8e4;
+    --bg: #eef2f7; --card: #ffffff; --ink: #1b2a41; --sub: #6b7a90; --line: #e3e8ef;
+    --accent: #1f6fd1; --good: #12936b; --bad: #d64545; --warn: #b7791f; --bar: #c7d9f2;
+    --hero1: #0c2c66; --hero2: #1858b8; --shadow: 0 1px 2px rgba(16, 40, 90, .06), 0 4px 16px rgba(16, 40, 90, .06);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #151514; --card: #1f1f1d; --ink: #ecebe6; --sub: #9b9a94; --line: #33322f;
-      --accent: #7fb3d9; --good: #6cc495; --bad: #ef8a77; --warn: #e2b04f; --bar: #2f4658;
+      --bg: #0b111b; --card: #141d2b; --ink: #e6ecf5; --sub: #93a1b5; --line: #243246;
+      --accent: #6aa8f0; --good: #4cc79c; --bad: #f07b7b; --warn: #e6b45a; --bar: #2a4468;
+      --hero1: #0a1d40; --hero2: #143f86; --shadow: none;
     }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
-  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; }
-  header h1 { font-size: 18px; margin: 4px 0 2px; }
-  header p { margin: 0; color: var(--sub); font-size: 12px; }
-  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0 4px; -webkit-overflow-scrolling: touch; }
+    font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 15px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased; }
+  .num { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+  /* 上の紺の帯 */
+  .hero { background: linear-gradient(135deg, var(--hero1), var(--hero2)); color: #fff; padding: 18px 0 64px; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+  .hero .top-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .hero h1 { font-size: 17px; font-weight: 700; margin: 0; letter-spacing: .04em; }
+  .hero .upd { font-size: 11px; opacity: .7; }
+  .hero .chips { padding: 14px 0 6px; }
+  .hero .chip { background: rgba(255, 255, 255, .12); border-color: transparent; color: #fff; }
+  .hero .chip[aria-pressed="true"] { background: #fff; color: var(--hero1); font-weight: 700; }
+  .hero .cap { font-size: 12px; opacity: .8; margin-top: 14px; }
+  .hero .amount { font-size: 38px; font-weight: 700; line-height: 1.15; margin: 2px 0 4px; }
+  .hero .amount small { font-size: 18px; font-weight: 600; margin-right: 2px; opacity: .9; }
+  .hero .pending { color: #ffe1a6; font-size: 12px; margin: 4px 0 0; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .stat { background: rgba(255, 255, 255, .1); border-radius: 12px; padding: 10px 12px; }
+  .stat .label { font-size: 11px; opacity: .75; }
+  .stat .val { font-size: 18px; font-weight: 700; }
+  .stat .val.neg { color: #ffb3b3; }
+  /* 帯に少し重ねる白いカード */
+  main { max-width: 640px; margin: -44px auto 0; padding: 0 16px 48px; position: relative; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
   .chip { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; font-family: inherit; cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
-  h2 { font-size: 13px; color: var(--sub); font-weight: 600; margin: 0 0 10px; letter-spacing: .02em; }
-  .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-  .kpi .big { grid-column: 1 / -1; }
-  .kpi .label { font-size: 12px; color: var(--sub); }
-  .kpi .val { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .kpi .big .val { font-size: 28px; }
+  section { background: var(--card); border-radius: 16px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow); }
+  h2 { font-size: 14px; font-weight: 700; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+  h2::before { content: ""; width: 4px; height: 14px; border-radius: 2px; background: var(--accent); }
+  h2 .hint { font-size: 11px; font-weight: 400; color: var(--sub); }
   .neg { color: var(--bad); }
   .pos { color: var(--good); }
-  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
-  .row:first-of-type { border-top: 0; }
-  .row .name { font-weight: 600; }
-  .row .tag { font-size: 11px; color: var(--sub); }
-  .row .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; padding-top: 4px; }
+  .row .name { font-weight: 700; }
+  .row .tag { display: inline-block; font-size: 10px; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 4px; padding: 1px 6px; margin-top: 2px; }
+  .row .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; }
+  .row .money > div + div { font-size: 13px; font-weight: 600; }
   .row .rates { grid-column: 1 / -1; font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
-  .alert { border-color: var(--warn); }
+  .alert { border-left: 4px solid var(--warn); }
   .alert h2 { color: var(--warn); }
+  .alert h2::before { background: var(--warn); }
+  .alert ul { margin: 0; padding-left: 18px; }
   .alert li { font-size: 13px; margin-bottom: 4px; }
   .empty { color: var(--sub); font-size: 13px; }
   svg text { fill: var(--sub); font-size: 10px; }
-  .note { font-size: 11px; color: var(--sub); margin-top: 16px; }
+  .note { font-size: 11px; color: var(--sub); margin: 18px 4px 0; }
   .pending { color: var(--warn); font-size: 12px; margin: 0 0 8px; }
   .money .pending { margin: 0; font-weight: 600; }
-  .split .bar { height: 10px; border-radius: 999px; background: var(--warn); overflow: hidden; margin: 6px 0; }
+  .split .bar { height: 12px; border-radius: 999px; background: var(--warn); overflow: hidden; margin: 4px 0 10px; }
   .split .bar span { display: block; height: 100%; background: var(--accent); }
-  .splitrow { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .splitrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-variant-numeric: tabular-nums; }
+  .splitrow .label { font-size: 11px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
+  .splitrow .label i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .splitrow .v { font-size: 17px; font-weight: 700; }
+  .splitrow .p { font-size: 12px; color: var(--sub); }
+  .split .foot { font-size: 11px; color: var(--sub); margin-top: 8px; }
   /* PC（横幅が広い画面）：2列に並べて一覧性を上げる */
   @media (min-width: 900px) {
-    main { max-width: 1160px; padding: 24px 32px 64px; }
-    header h1 { font-size: 22px; }
+    .wrap, main { max-width: 1160px; padding-left: 32px; padding-right: 32px; }
+    .hero { padding-top: 24px; }
+    .hero h1 { font-size: 20px; }
+    .hero .amount { font-size: 48px; }
+    .hero-body { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: end; }
+    .stats { grid-template-columns: repeat(4, 1fr); margin-top: 0; }
     .top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
-    .top > section { margin-top: 12px; }
-    .kpi { grid-template-columns: repeat(4, 1fr); }
-    .kpi .val { font-size: 22px; }
-    .kpi .big .val { font-size: 34px; }
     .list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
-    .list .row:nth-child(2) { border-top: 0; }
-    section { padding: 18px 20px; }
+    .list .row:nth-child(2) { border-top: 0; padding-top: 4px; }
+    section { padding: 20px 24px; }
   }
   @media (min-width: 1300px) {
     .list.stores { grid-template-columns: 1fr 1fr 1fr; }
-    .list.stores .row:nth-child(3) { border-top: 0; }
+    .list.stores .row:nth-child(3) { border-top: 0; padding-top: 4px; }
   }
 </style>
 </head>
 <body>
-<main id="app"></main>
+<div id="app"></div>
 <script>
   let D = { error: '読み込み中…' };
   const app = document.getElementById('app');
@@ -89,9 +118,9 @@
   let state = { month: null, biz: '全事業' };
 
   function render() {
-    if (D.error) { app.innerHTML = '<p class="empty" style="padding:40px 0">' + esc(D.error) + '</p>'; return; }
+    if (D.error) { app.innerHTML = '<main style="margin-top:0"><p class="empty" style="padding:40px 0">' + esc(D.error) + '</p></main>'; return; }
     const months = [...new Set(D.metrics.map(r => r.month))].sort().reverse();
-    if (!months.length) { app.innerHTML = '<p class="empty" style="padding:40px 0">まだ数字がありません。</p>'; return; }
+    if (!months.length) { app.innerHTML = '<main style="margin-top:0"><p class="empty" style="padding:40px 0">まだ数字がありません。</p></main>'; return; }
     if (!state.month) state.month = months[0];
     const inMonth = D.metrics.filter(r => r.month === state.month);
     const total = inMonth.find(r => r.kind === '全店') || {};
@@ -100,41 +129,41 @@
       .sort((a, b) => (b.profit ?? -Infinity) - (a.profit ?? -Infinity));
     const probs = D.problems.filter(p => p.month === state.month);
 
-    let h = '<header><h1>' + esc(D.company) + '</h1><p>更新：' + esc(D.updated || '—') +
-      (D.paused ? '　・自動更新は停止中' : '') + '</p></header>';
-    h += '<div class="chips" role="group" aria-label="月">' + months.map(m =>
-      '<button class="chip" data-month="' + m + '" aria-pressed="' + (m === state.month) + '">' + monthLabel(m) + '</button>').join('') + '</div>';
+    const tn = closedNote(total);
+    const st = (label, v, cls) => '<div class="stat"><div class="label">' + label + '</div><div class="val num ' + (cls || '') + '">' + v + '</div></div>';
+    let h = '<div class="hero"><div class="wrap">' +
+      '<div class="top-line"><h1>' + esc(D.company) + '</h1><span class="upd">更新 ' + esc(D.updated || '—') + (D.paused ? '・自動更新は停止中' : '') + '</span></div>' +
+      '<div class="chips" role="group" aria-label="月">' + months.map(m =>
+        '<button class="chip" data-month="' + m + '" aria-pressed="' + (m === state.month) + '">' + monthLabel(m) + '</button>').join('') + '</div>' +
+      '<div class="hero-body"><div><div class="cap">全店の売上　' + monthLabel(state.month) + '</div>' +
+      '<div class="amount num">' + (total.sales == null ? '—' : '<small>¥</small>' + Math.round(total.sales).toLocaleString('ja-JP')) + '</div>' +
+      (tn ? '<p class="pending">' + esc(tn) + '</p>' : '') + '</div>' +
+      '<div class="stats">' + st('営業利益', yen(total.profit), total.profit < 0 ? 'neg' : '') + st('営業利益率', pct(total.profitRate)) +
+      st('原価率', pct(total.costRate)) + st('人件費率', pct(total.laborRate)) + '</div></div></div></div><main>';
 
     if (probs.length) {
-      h += '<section class="alert"><h2>読めなかった所 ' + probs.length + '件（下の数字に入っていない可能性）</h2><ul>' +
+      h += '<section class="alert"><h2>読めなかった所 ' + probs.length + '件<span class="hint">下の数字に入っていない可能性</span></h2><ul>' +
         probs.map(p => '<li>' + esc(p.store) + '：' + esc(p.text) + '</li>').join('') + '</ul></section>';
     }
 
-    const tn = closedNote(total);
-    h += '<div class="top"><section><h2>全店　' + monthLabel(state.month) + '</h2>' +
-      (tn ? '<p class="pending">' + esc(tn) + '</p>' : '') + '<div class="kpi">' +
-      '<div class="big"><div class="label">売上</div><div class="val">' + yen(total.sales) + '</div></div>' +
-      '<div><div class="label">営業利益</div><div class="val ' + (total.profit < 0 ? 'neg' : '') + '">' + yen(total.profit) + '</div></div>' +
-      '<div><div class="label">営業利益率</div><div class="val">' + pct(total.profitRate) + '</div></div>' +
-      '<div><div class="label">原価率</div><div class="val">' + pct(total.costRate) + '</div></div>' +
-      '<div><div class="label">人件費率</div><div class="val">' + pct(total.laborRate) + '</div></div>' +
-      (total.inStore != null ? '<div class="big split"><div class="label">売上の内訳（デリバリーは手数料を引いた後）</div>' +
+    h += '<div class="top">';
+    if (total.inStore != null) {
+      h += '<section class="split"><h2>売上の内訳<span class="hint">デリバリーは手数料を引いた後</span></h2>' +
         '<div class="bar"><span style="width:' + (100 - (total.deliveryRate || 0) * 100) + '%"></span></div>' +
-        '<div class="splitrow"><span>店舗内 ' + yen(total.inStore) + '（' + pct(total.deliveryRate == null ? null : 1 - total.deliveryRate) + '）</span>' +
-        '<span>デリバリー ' + yen(total.delivery) + '（' + pct(total.deliveryRate) + '）</span></div>' +
-        (total.deliveryOrders ? '<div class="label">デリバリーの注文額（手数料前）' + yen(total.deliveryOrders) + '</div>' : '') + '</div>' : '') +
-      '</div></section>';
-
-    h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months) + '</section></div>';
+        '<div class="splitrow"><div><div class="label"><i style="background:var(--accent)"></i>店舗内</div><div class="v num">' + yen(total.inStore) + '</div><div class="p num">' + pct(total.deliveryRate == null ? null : 1 - total.deliveryRate) + '</div></div>' +
+        '<div><div class="label"><i style="background:var(--warn)"></i>デリバリー</div><div class="v num">' + yen(total.delivery) + '</div><div class="p num">' + pct(total.deliveryRate) + '</div></div></div>' +
+        (total.deliveryOrders ? '<div class="foot">デリバリーの注文額（手数料前）' + yen(total.deliveryOrders) + '</div>' : '') + '</section>';
+    }
+    h += '<section><h2>月ごとの推移<span class="hint">全店</span></h2>' + trend(months) + '</section></div>';
 
     h += '<section><h2>事業ごと</h2>' + (bizRows.length ? '<div class="list">' + bizRows.map(rowHtml).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
     const bizNames = ['全事業', ...bizRows.map(r => r.name)];
-    h += '<section><h2>店舗ごと（営業利益の多い順・締め前は下）</h2><div class="chips" role="group" aria-label="事業">' +
+    h += '<section><h2>店舗ごと<span class="hint">営業利益の多い順・締め前は下</span></h2><div class="chips" role="group" aria-label="事業" style="margin-bottom:8px">' +
       bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '" aria-pressed="' + (b === state.biz) + '">' + esc(b) + '</button>').join('') +
       '</div>' + (stores.length ? '<div class="list stores">' + stores.map(rowHtml).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
-    h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。率はまとめスプシの式で計算しています。</p>';
+    h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。率はまとめスプシの式で計算しています。</p></main>';
     app.innerHTML = h;
     app.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.month = b.dataset.month; render(); });
     app.querySelectorAll('[data-biz]').forEach(b => b.onclick = () => { state.biz = b.dataset.biz; render(); });
