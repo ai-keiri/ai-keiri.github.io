@@ -6,181 +6,300 @@
 <meta name="referrer" content="no-referrer">
 <title>数字ページ</title>
 <meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* 銀行アプリ風：やわらかいグラデーションの帯に大きな数字、下に白いカード。押すと少し動く */
+/* Ark Tech UI の変数（tokens.json から作った） */
+:root {
+  --canvas: #f8fafc;
+  --surface: #ffffff;
+  --surface-sunken: #f1f5f9;
+  --surface-raised: #ffffff;
+  --line: #e2e8f0;
+  --line-subtle: #f1f5f9;
+  --line-control: #8391a5;
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-subtle: #5f6e84;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --on-primary: #ffffff;
+  --primary-tint: #eef2ff;
+  --on-primary-tint: #3730a3;
+  --focus-ring: #4f46e5;
+  --danger: #b91c1c;
+  --danger-bg: #fee2e2;
+  --danger-fg: #991b1b;
+  --warning: #b45309;
+  --warning-bg: #fef3c7;
+  --warning-fg: #92400e;
+  --info: #1d4ed8;
+  --info-bg: #dbeafe;
+  --info-fg: #1e40af;
+  --success: #15803d;
+  --success-bg: #dcfce7;
+  --success-fg: #166534;
+  --neutral-bg: #f1f5f9;
+  --neutral-fg: #475569;
+  --side: #0f172a;
+  --side-raised: #1e293b;
+  --side-ink: #cbd5e1;
+  --side-muted: #94a3b8;
+  --chart-1: #4f46e5;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #0ea5e9;
+  --chart-5: #ec4899;
+  --scrim: rgba(15, 23, 42, 0.5);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --size-control: 44px;
+  --size-control-lg: 52px;
+  --size-sidebar: 224px;
+  --size-icon: 20px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-float: 0 12px 32px rgba(15, 23, 42, 0.14), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --font-ui: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  --font-num: "Inter", "Noto Sans JP", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
   :root {
-    --bg: #eef2f8; --card: #ffffff; --ink: #1c2940; --sub: #6d7a91; --line: #e4e9f1;
-    --accent: #3f74d6; --accent2: #6fb2f2; --good: #1f9e7a; --bad: #d65a5a; --warn: #c48a2c;
-    --bar: #d5e2f5; --bar-on: #8fb6ec;
-    --hero: radial-gradient(120% 140% at 100% 0%, rgba(140, 200, 255, .35) 0%, rgba(140, 200, 255, 0) 55%),
-            radial-gradient(90% 120% at 0% 100%, rgba(120, 90, 220, .25) 0%, rgba(120, 90, 220, 0) 60%),
-            linear-gradient(135deg, #1d3566 0%, #2f5aa8 55%, #4c86d8 100%);
-    --grad: linear-gradient(135deg, #3f74d6, #6fb2f2);
-    --grad-warn: linear-gradient(135deg, #e0a046, #f2c879);
-    --shadow: 0 1px 2px rgba(20, 45, 95, .05), 0 6px 20px rgba(20, 45, 95, .07);
-    --shadow-up: 0 2px 4px rgba(20, 45, 95, .06), 0 12px 28px rgba(20, 45, 95, .12);
+    --canvas: #0b1120;
+    --surface: #131c2e;
+    --surface-sunken: #0f1728;
+    --surface-raised: #1a2438;
+    --line: #263247;
+    --line-subtle: #1c2638;
+    --line-control: #64748b;
+    --ink: #e8edf5;
+    --ink-muted: #b4c0d3;
+    --ink-subtle: #8b9ab0;
+    --primary: #5b55f0;
+    --primary-hover: #6d68f5;
+    --on-primary: #ffffff;
+    --primary-tint: #1e2050;
+    --on-primary-tint: #c7d2fe;
+    --focus-ring: #a5b4fc;
+    --danger: #fca5a5;
+    --danger-bg: #3f1a1f;
+    --danger-fg: #fecaca;
+    --warning: #fcd34d;
+    --warning-bg: #3a2a10;
+    --warning-fg: #fde68a;
+    --info: #93c5fd;
+    --info-bg: #172a4d;
+    --info-fg: #bfdbfe;
+    --success: #86efac;
+    --success-bg: #123222;
+    --success-fg: #bbf7d0;
+    --neutral-bg: #1f2a3d;
+    --neutral-fg: #cbd5e1;
+    --side: #070b14;
+    --side-raised: #141c2c;
+    --side-ink: #cbd5e1;
+    --side-muted: #94a3b8;
+    --chart-1: #818cf8;
+    --chart-2: #34d399;
+    --chart-3: #fbbf24;
+    --chart-4: #38bdf8;
+    --chart-5: #f472b6;
+    --scrim: rgba(2, 6, 23, 0.7);
+    --shadow-card: none;
+    --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+  /* Ark Tech UI に合わせる。例外（皓亮の指示 2026-10-21）：上の帯のグラデーションと、押した時・切り替えた時の動きは残す */
+  :root {
+    --hero: radial-gradient(120% 140% at 100% 0%, rgba(165, 180, 252, .35) 0%, rgba(165, 180, 252, 0) 55%),
+            radial-gradient(90% 120% at 0% 100%, rgba(14, 165, 233, .22) 0%, rgba(14, 165, 233, 0) 60%),
+            linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4f46e5 100%);
+    --grad-primary: linear-gradient(135deg, var(--primary), var(--chart-4));
+    --grad-in: linear-gradient(90deg, var(--chart-1), var(--chart-4));
+    --grad-del: linear-gradient(90deg, var(--chart-3), var(--warning));
+    /* 事業の色（グラフの色の順）。地はうすいグラデーション、文字は濃い同じ色 */
+    --bz0-a: rgba(79, 70, 229, .16);  --bz0-b: rgba(14, 165, 233, .10); --bz0-fg: #3730a3; --bz0-dot: var(--chart-1);
+    --bz1-a: rgba(16, 185, 129, .18); --bz1-b: rgba(14, 165, 233, .08); --bz1-fg: #047857; --bz1-dot: var(--chart-2);
+    --bz2-a: rgba(245, 158, 11, .20); --bz2-b: rgba(236, 72, 153, .08); --bz2-fg: #92400e; --bz2-dot: var(--chart-3);
+    --bz3-a: rgba(14, 165, 233, .18); --bz3-b: rgba(79, 70, 229, .08); --bz3-fg: #075985; --bz3-dot: var(--chart-4);
+    --bz4-a: rgba(236, 72, 153, .16); --bz4-b: rgba(245, 158, 11, .08); --bz4-fg: #9d174d; --bz4-dot: var(--chart-5);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0b111c; --card: #141d2c; --ink: #e6ecf6; --sub: #93a1b7; --line: #233148;
-      --accent: #6fa3f0; --accent2: #93c8ff; --good: #55c9a0; --bad: #f08585; --warn: #e6b65e;
-      --bar: #23385a; --bar-on: #4f7fc4;
-      --hero: radial-gradient(120% 140% at 100% 0%, rgba(90, 150, 230, .25) 0%, rgba(90, 150, 230, 0) 55%),
-              radial-gradient(90% 120% at 0% 100%, rgba(110, 80, 200, .22) 0%, rgba(110, 80, 200, 0) 60%),
-              linear-gradient(135deg, #0f1f3f 0%, #1c3c78 60%, #2c5aa6 100%);
-      --shadow: none; --shadow-up: 0 0 0 1px var(--line);
+      --hero: radial-gradient(120% 140% at 100% 0%, rgba(129, 140, 248, .25) 0%, rgba(129, 140, 248, 0) 55%),
+              radial-gradient(90% 120% at 0% 100%, rgba(56, 189, 248, .14) 0%, rgba(56, 189, 248, 0) 60%),
+              linear-gradient(135deg, #0b1120 0%, #1e2050 55%, #3b37b8 100%);
+      --bz0-fg: #c7d2fe; --bz1-fg: #a7f3d0; --bz2-fg: #fde68a; --bz3-fg: #bae6fd; --bz4-fg: #fbcfe8;
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; font-size: 15px; line-height: 1.5;
-    -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font-ui);
+    font-size: 14px; line-height: 22px; -webkit-font-smoothing: antialiased; }
   button, select { font-family: inherit; }
-  .num { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+  :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
 
-  /* ---- 上の帯 ---- */
-  .hero { background: var(--hero); color: #fff; padding: 18px 0 70px; position: relative; overflow: hidden; }
-  .hero::after { content: ""; position: absolute; right: -80px; top: -80px; width: 260px; height: 260px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, .14), rgba(255, 255, 255, 0) 70%); pointer-events: none; }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; position: relative; z-index: 1; }
-  .top-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .hero h1 { font-size: 17px; font-weight: 700; margin: 0; letter-spacing: .04em; }
-  .upd { font-size: 11px; opacity: .7; }
-  .icon-btn { width: 36px; height: 36px; border-radius: 12px; border: 0; color: #fff; cursor: pointer;
-    background: rgba(255, 255, 255, .14); display: grid; place-items: center;
-    transition: background .2s, transform .15s; }
+  /* ---- 上の帯（例外：グラデーション） ---- */
+  .hero { background: var(--hero); color: #fff; padding: var(--space-5) 0 var(--space-12); position: relative; overflow: hidden; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 var(--space-4); position: relative; z-index: 1; }
+  .top-line { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+  .hero h1 { font-size: 20px; line-height: 28px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .upd { font-size: 12px; line-height: 16px; color: rgba(255, 255, 255, .78); }
+  .icon-btn { width: var(--size-control); height: var(--size-control); border-radius: var(--radius-md); border: 0; color: #fff; cursor: pointer;
+    background: rgba(255, 255, 255, .14); display: grid; place-items: center; transition: background-color .15s ease-out, transform .15s ease-out; }
   .icon-btn:hover { background: rgba(255, 255, 255, .24); }
   .icon-btn:active { transform: scale(.92); }
-  .icon-btn svg { width: 18px; height: 18px; transition: transform .4s; }
+  .icon-btn svg { width: var(--size-icon); height: var(--size-icon); transition: transform .4s; }
   .icon-btn:hover svg { transform: rotate(45deg); }
 
-  /* 表示の切り替え（月／期／期間指定） */
-  .seg { display: inline-flex; margin-top: 14px; padding: 3px; border-radius: 12px; background: rgba(255, 255, 255, .12); position: relative; }
-  .seg button { position: relative; z-index: 1; border: 0; background: transparent; color: rgba(255, 255, 255, .8);
-    padding: 6px 16px; font-size: 13px; border-radius: 9px; cursor: pointer; transition: color .25s; }
-  .seg button[aria-pressed="true"] { color: #1d3566; font-weight: 700; }
-  .seg .knob { position: absolute; top: 3px; bottom: 3px; border-radius: 9px; background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .15); transition: left .3s cubic-bezier(.3, .7, .2, 1), width .3s cubic-bezier(.3, .7, .2, 1); }
+  /* 切替（月／期／期間指定）：白い玉がすべる */
+  .seg { display: inline-flex; margin-top: var(--space-4); padding: 3px; border-radius: var(--radius-md); background: rgba(255, 255, 255, .12); position: relative; }
+  .seg button { position: relative; z-index: 1; min-height: 38px; min-width: var(--size-control); border: 0; background: transparent; color: rgba(255, 255, 255, .85);
+    padding: 0 var(--space-4); font-size: 14px; font-weight: 500; border-radius: 6px; cursor: pointer; transition: color .15s ease-out; }
+  .seg button[aria-pressed="true"] { color: var(--on-primary-tint); font-weight: 600; }
+  .seg .knob { position: absolute; top: 3px; bottom: 3px; border-radius: 6px; background: var(--surface);
+    box-shadow: var(--shadow-card); transition: left .3s cubic-bezier(.3, .7, .2, 1), width .3s cubic-bezier(.3, .7, .2, 1); }
 
-  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 0 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .chips { display: flex; gap: var(--space-2); overflow-x: auto; padding: var(--space-3) 0 var(--space-1); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
-  .chip { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    padding: 6px 14px; border-radius: 999px; font-size: 13px; cursor: pointer;
-    transition: background .25s, color .25s, border-color .25s, box-shadow .25s, transform .15s; }
-  .chip:hover { border-color: var(--accent2); }
-  .chip:active { transform: scale(.94); }
-  .chip[aria-pressed="true"] { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(63, 116, 214, .3); }
-  .hero .chip { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .12); color: #fff; }
+  .chip { flex: none; min-height: var(--size-control); border: 1px solid var(--line-control); background: var(--surface); color: var(--ink);
+    padding: 0 var(--space-4); border-radius: var(--radius-full); font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: var(--space-2);
+    transition: background-color .15s ease-out, color .15s ease-out, border-color .15s ease-out, box-shadow .15s ease-out, transform .15s ease-out; }
+  .chip:hover { border-color: var(--primary); }
+  .chip:active { transform: scale(.95); }
+  .chip[aria-pressed="true"] { background: var(--primary-tint); color: var(--on-primary-tint); border-color: var(--primary); font-weight: 600; }
+  .hero .chip { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .28); color: #fff; }
   .hero .chip:hover { background: rgba(255, 255, 255, .2); }
-  .hero .chip[aria-pressed="true"] { background: linear-gradient(135deg, #fff, #e3eeff); color: #1d3566; font-weight: 700; box-shadow: 0 4px 14px rgba(0, 0, 0, .18); }
+  .hero .chip[aria-pressed="true"] { background: var(--surface); color: var(--on-primary-tint); border-color: transparent; box-shadow: var(--shadow-float); }
 
-  .range { display: flex; align-items: center; gap: 8px; padding: 10px 0 6px; flex-wrap: wrap; }
-  .range select { appearance: none; -webkit-appearance: none; border: 1px solid rgba(255, 255, 255, .25); color: #fff;
-    background: rgba(255, 255, 255, .12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center;
-    padding: 7px 28px 7px 12px; border-radius: 10px; font-size: 13px; cursor: pointer; transition: background .2s; }
+  .range { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) 0 var(--space-1); flex-wrap: wrap; }
+  .range select { appearance: none; -webkit-appearance: none; min-height: var(--size-control); border: 1px solid rgba(255, 255, 255, .35); color: #fff;
+    background: rgba(255, 255, 255, .12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;
+    padding: 0 var(--space-8) 0 var(--space-3); border-radius: var(--radius-md); font-size: 14px; cursor: pointer; transition: background-color .15s ease-out; }
   .range select:hover { background-color: rgba(255, 255, 255, .2); }
-  .range select option { color: #1c2940; }
+  .range select option { color: var(--ink); background: var(--surface); }
 
-  .cap { font-size: 12px; opacity: .8; margin-top: 14px; }
-  .amount { font-size: 38px; font-weight: 700; line-height: 1.15; margin: 2px 0 4px; }
-  .amount small { font-size: 18px; font-weight: 600; margin-right: 2px; opacity: .9; }
-  .hero .pending { color: #ffe3ad; font-size: 12px; margin: 4px 0 0; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-  .stat { background: linear-gradient(135deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .06));
-    border: 1px solid rgba(255, 255, 255, .1); border-radius: 14px; padding: 10px 12px; backdrop-filter: blur(6px);
-    transition: transform .2s, background .2s; }
-  .stat:hover { transform: translateY(-2px); background: linear-gradient(135deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .08)); }
-  .stat .label { font-size: 11px; opacity: .75; }
-  .stat .val { font-size: 18px; font-weight: 700; }
-  .stat .val.neg { color: #ffc2c2; }
+  .cap { font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255, 255, 255, .82); margin-top: var(--space-4); }
+  .amount { font-family: var(--font-num); font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em; margin: var(--space-1) 0; white-space: nowrap; }
+  .amount small { font-size: 16px; font-weight: 500; margin-right: 2px; letter-spacing: 0; }
+  .hero .pending-note { display: inline-flex; align-items: center; gap: var(--space-1); margin: var(--space-1) 0 0; font-size: 12px; line-height: 16px; font-weight: 600;
+    color: var(--warning-fg); background: var(--warning-bg); border-radius: var(--radius-full); padding: 2px 10px 2px 8px; }
+  .pending-note svg { width: 13px; height: 13px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); margin-top: var(--space-4); }
+  .stat { background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); min-width: 0;
+    transition: transform .15s ease-out, background-color .15s ease-out; }
+  .stat:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .16); }
+  .stat .label { font-size: 12px; line-height: 16px; font-weight: 500; color: rgba(255, 255, 255, .8); }
+  .stat .val { font-family: var(--font-num); font-size: 16px; line-height: 22px; font-weight: 600; white-space: nowrap; }
+  .stat .val.neg { color: #fecaca; }
 
-  /* ---- 帯に少し重ねる白いカード ---- */
-  main { max-width: 640px; margin: -48px auto 0; padding: 0 16px 48px; position: relative; z-index: 2; }
-  section { background: var(--card); border-radius: 18px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow);
-    transition: box-shadow .25s, transform .25s; animation: rise .45s cubic-bezier(.2, .7, .2, 1) both; }
-  section:hover { box-shadow: var(--shadow-up); }
+  /* ---- カード（帯に少し重ねる） ---- */
+  main { max-width: 640px; margin: calc(-1 * var(--space-8)) auto 0; padding: 0 var(--space-4) var(--space-12); position: relative; z-index: 2; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-5); margin-top: var(--space-4);
+    box-shadow: var(--shadow-card); animation: rise .45s cubic-bezier(.2, .7, .2, 1) both; }
   @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   .fade { animation: fade .35s ease both; }
-  h2 { font-size: 14px; font-weight: 700; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  h2::before { content: ""; width: 4px; height: 14px; border-radius: 2px; background: var(--grad); }
-  h2 .hint { font-size: 11px; font-weight: 400; color: var(--sub); }
-  .neg { color: var(--bad); }
-  .pos { color: var(--good); }
-  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 10px; margin: 0 -10px;
-    border-top: 1px solid var(--line); border-radius: 12px; transition: background .2s, transform .15s; }
-  .row:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  h2 { font-size: 15px; line-height: 22px; font-weight: 600; margin: 0 0 var(--space-4); }
+  .neg { color: var(--danger); }
+  .pos { color: var(--success); }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px var(--space-3); padding: var(--space-3); margin: 0 calc(-1 * var(--space-3));
+    border-top: 1px solid var(--line-subtle); border-radius: var(--radius-md); transition: background-color .15s ease-out, transform .15s ease-out; }
+  .row:hover { background: var(--surface-sunken); }
   .row:active { transform: scale(.99); }
   .row:first-of-type { border-top-color: transparent; }
-  .row .name { font-weight: 700; }
-  .row .tag { display: inline-block; font-size: 10px; font-weight: 600; color: #fff; background: var(--bz, var(--grad));
-    border-radius: 6px; padding: 2px 8px; margin-top: 3px; box-shadow: 0 2px 6px var(--bzs, rgba(63, 116, 214, .25)); }
-  .chip[data-biz] .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--bz); margin-right: 6px; vertical-align: 1px; }
-  .chip[data-biz][aria-pressed="true"] { background: var(--bz, var(--grad)); box-shadow: 0 4px 12px var(--bzs, rgba(63, 116, 214, .3)); }
-  .chip[data-biz][aria-pressed="true"] .dot { background: rgba(255, 255, 255, .85); }
-  .row .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; }
-  .row .money > div + div { font-size: 13px; font-weight: 600; }
-  .row .rates { grid-column: 1 / -1; font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
-  .alert { border-left: 4px solid var(--warn); }
-  .alert h2 { color: var(--warn); }
-  .alert ul { margin: 0; padding-left: 18px; }
-  .alert li { font-size: 13px; margin-bottom: 4px; }
-  .empty { color: var(--sub); font-size: 13px; }
-  svg text { fill: var(--sub); font-size: 10px; }
-  .trend rect { transition: opacity .2s; }
+  .row .name { font-weight: 600; }
+  .tag { display: inline-flex; align-items: center; height: 22px; padding: 0 var(--space-2); border-radius: var(--radius-sm); margin-top: 2px;
+    font-size: 12px; font-weight: 500; color: var(--neutral-fg); background: var(--neutral-bg); }
+  .row .money { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 16px; line-height: 22px; font-weight: 600; white-space: nowrap; }
+  .row .money > div + div { font-size: 14px; }
+  .row .rates { grid-column: 1 / -1; font-size: 12px; line-height: 18px; color: var(--ink-muted); font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+  .badge { display: inline-flex; align-items: center; gap: var(--space-1); height: 24px; padding: 0 10px 0 8px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .badge svg { width: 13px; height: 13px; }
+  .badge--warning { background: var(--warning-bg); color: var(--warning-fg); }
+  .alert { border-left: 4px solid var(--danger); }
+  .alert h2 { color: var(--danger); display: flex; align-items: center; gap: var(--space-2); }
+  .alert ul { margin: 0; padding-left: var(--space-5); }
+  .empty { color: var(--ink-muted); }
+  svg text { fill: var(--ink-subtle); font-size: 11px; font-family: var(--font-num); }
+  .trend rect { transition: opacity .15s ease-out; }
   .trend rect:hover { opacity: .75; }
-  .note { font-size: 11px; color: var(--sub); margin: 18px 4px 0; }
-  .pending { color: var(--warn); font-size: 12px; margin: 0 0 8px; }
-  .money .pending { margin: 0; font-weight: 600; }
-  .split .bar { height: 12px; border-radius: 999px; background: var(--grad-warn); overflow: hidden; margin: 4px 0 10px; }
-  .split .bar span { display: block; height: 100%; background: var(--grad); border-radius: 999px; width: 0;
-    transition: width .9s cubic-bezier(.2, .7, .2, 1); }
-  .splitrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-variant-numeric: tabular-nums; }
-  .splitrow .label { font-size: 11px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
-  .splitrow .label i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .splitrow .v { font-size: 17px; font-weight: 700; }
-  .splitrow .p { font-size: 12px; color: var(--sub); }
-  .split .foot { font-size: 11px; color: var(--sub); margin-top: 8px; }
+  .legend { display: flex; gap: var(--space-4); margin-top: var(--space-2); font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: var(--space-1); vertical-align: -1px; }
+  details.about { margin: var(--space-6) var(--space-1) 0; color: var(--ink-muted); }
+  details.about summary { cursor: pointer; min-height: var(--size-control); display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 500; color: var(--ink-muted); }
+  details.about p { margin: 0; font-size: 12px; line-height: 18px; }
+  .split .bar { display: flex; height: 12px; border-radius: var(--radius-full); overflow: hidden; background: var(--surface-sunken); margin-bottom: var(--space-4); }
+  .split .bar span { display: block; height: 100%; width: 0; transition: width .9s cubic-bezier(.2, .7, .2, 1); }
+  .split .bar span:nth-child(1) { background: var(--grad-in); }
+  .split .bar span:nth-child(2) { background: var(--grad-del); }
+  .splitrow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .splitrow .label { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-subtle); display: flex; align-items: center; gap: var(--space-2); }
+  .splitrow .label i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .splitrow .v { font-family: var(--font-num); font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.015em; white-space: nowrap; }
+  .splitrow .p { font-family: var(--font-num); color: var(--ink-muted); }
+  .split .foot { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line-subtle); display: flex; justify-content: space-between; gap: var(--space-2); color: var(--ink-muted); }
+  .split .foot b { font-family: var(--font-num); font-weight: 600; color: var(--ink); }
+
+  /* 事業の色（例外：うすいグラデーション） */
+  [data-bz] { --bz-a: var(--neutral-bg); --bz-b: var(--neutral-bg); --bz-fg: var(--neutral-fg); --bz-dot: var(--line-control); }
+  [data-bz="0"] { --bz-a: var(--bz0-a); --bz-b: var(--bz0-b); --bz-fg: var(--bz0-fg); --bz-dot: var(--bz0-dot); }
+  [data-bz="1"] { --bz-a: var(--bz1-a); --bz-b: var(--bz1-b); --bz-fg: var(--bz1-fg); --bz-dot: var(--bz1-dot); }
+  [data-bz="2"] { --bz-a: var(--bz2-a); --bz-b: var(--bz2-b); --bz-fg: var(--bz2-fg); --bz-dot: var(--bz2-dot); }
+  [data-bz="3"] { --bz-a: var(--bz3-a); --bz-b: var(--bz3-b); --bz-fg: var(--bz3-fg); --bz-dot: var(--bz3-dot); }
+  [data-bz="4"] { --bz-a: var(--bz4-a); --bz-b: var(--bz4-b); --bz-fg: var(--bz4-fg); --bz-dot: var(--bz4-dot); }
+  .tag[data-bz] { background: linear-gradient(135deg, var(--bz-a), var(--bz-b)); color: var(--bz-fg); }
+  .chip .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bz-dot); flex: none; }
+  .chip[data-bz][aria-pressed="true"] { background: linear-gradient(135deg, var(--bz-a), var(--bz-b)); color: var(--bz-fg); border-color: var(--bz-dot); }
 
   /* ---- 設定（下から出る画面） ---- */
-  .sheet-bg { position: fixed; inset: 0; background: rgba(10, 20, 40, .35); backdrop-filter: blur(2px); z-index: 10;
-    opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .sheet-bg { position: fixed; inset: 0; background: var(--scrim); z-index: 10; opacity: 0; pointer-events: none; transition: opacity .3s; }
   .sheet-bg.on { opacity: 1; pointer-events: auto; }
   .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 11; max-width: 520px; margin: 0 auto;
-    background: var(--card); border-radius: 22px 22px 0 0; padding: 10px 20px 28px; box-shadow: 0 -10px 40px rgba(0, 0, 0, .2);
-    transform: translateY(105%); transition: transform .38s cubic-bezier(.2, .8, .2, 1); }
+    background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: var(--space-3) var(--space-6) var(--space-8);
+    box-shadow: var(--shadow-float); transform: translateY(105%); transition: transform .38s cubic-bezier(.2, .8, .2, 1); }
   .sheet.on { transform: none; }
-  .sheet .grip { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 14px; }
-  .sheet h3 { margin: 0 0 4px; font-size: 16px; }
-  .sheet p { margin: 0 0 14px; font-size: 12px; color: var(--sub); }
-  .months12 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .months12 button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 12px;
-    padding: 10px 0; font-size: 14px; cursor: pointer; transition: background .25s, color .25s, transform .15s, box-shadow .25s; }
-  .months12 button:hover { border-color: var(--accent2); }
-  .months12 button:active { transform: scale(.93); }
-  .months12 button[aria-pressed="true"] { background: var(--grad); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(63, 116, 214, .3); }
-  .done { margin-top: 18px; width: 100%; border: 0; border-radius: 14px; padding: 12px; font-size: 15px; font-weight: 700;
-    color: #fff; background: var(--grad); cursor: pointer; box-shadow: 0 6px 16px rgba(63, 116, 214, .3); transition: transform .15s, box-shadow .2s; }
-  .done:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(63, 116, 214, .3); }
+  .sheet:not(.on) { visibility: hidden; transition-property: transform, opacity, visibility; transition-delay: 0s, 0s, .38s; }
+  .sheet .grip { width: 40px; height: 5px; border-radius: var(--radius-full); background: var(--line); margin: 0 auto var(--space-4); }
+  .sheet h3 { margin: 0 0 var(--space-1); font-size: 20px; line-height: 28px; font-weight: 600; }
+  .sheet p { margin: 0 0 var(--space-4); color: var(--ink-muted); }
+  .sheet .label { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-subtle); margin-bottom: var(--space-2); }
+  .months12 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+  .months12 button { min-height: var(--size-control); border: 1px solid var(--line-control); background: var(--surface); color: var(--ink); border-radius: var(--radius-md);
+    font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out, transform .15s ease-out; }
+  .months12 button:hover { border-color: var(--primary); }
+  .months12 button:active { transform: scale(.94); }
+  .months12 button[aria-pressed="true"] { background: var(--primary-tint); color: var(--on-primary-tint); border-color: var(--primary); font-weight: 600; }
+  .done { margin-top: var(--space-6); width: 100%; min-height: var(--size-control-lg); border: 0; border-radius: var(--radius-md); font-size: 15px; font-weight: 600;
+    color: var(--on-primary); background: var(--primary); cursor: pointer; transition: background-color .15s ease-out, transform .15s ease-out; }
+  .done:hover { background: var(--primary-hover); }
+  .done:active { transform: scale(.98); }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 
-  /* PC（横幅が広い画面）：2列に並べて一覧性を上げる */
+  /* PC（900px 以上）：2列 */
   @media (min-width: 900px) {
-    .wrap, main { max-width: 1160px; padding-left: 32px; padding-right: 32px; }
-    .hero { padding-top: 24px; }
-    .hero h1 { font-size: 20px; }
-    .amount { font-size: 48px; }
-    .hero-body { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: end; }
+    .wrap, main { max-width: 1160px; padding-left: var(--space-6); padding-right: var(--space-6); }
+    .hero { padding-top: var(--space-6); }
+    .hero-body { display: grid; grid-template-columns: 1fr 1.4fr; gap: var(--space-6); align-items: end; }
     .stats { grid-template-columns: repeat(4, 1fr); margin-top: 0; }
-    .top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
-    .top > section { margin-top: 12px; }
-    .list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+    .top { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: stretch; }
+    .list { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--space-8); }
     .list .row:nth-child(2) { border-top-color: transparent; }
-    section { padding: 20px 24px; }
-    .sheet { bottom: auto; top: 50%; border-radius: 22px; transform: translateY(-40%) scale(.96); opacity: 0; pointer-events: none;
+    .sheet { bottom: auto; top: 50%; border-radius: var(--radius-xl); transform: translateY(-40%) scale(.96); opacity: 0; pointer-events: none;
       transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s; }
     .sheet.on { transform: translateY(-50%); opacity: 1; pointer-events: auto; }
     .sheet .grip { display: none; }
@@ -202,6 +321,7 @@
   const pct = v => v == null || !isFinite(v) ? '—' : (v * 100).toFixed(1) + '%';
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ym = m => { const [y, mm] = m.split('-'); return y + '年' + Number(mm) + '月'; };
+  const CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const monthLabel = m => ym(m) + (m === D.thisMonth ? '（途中）' : '');
 
   // 見ている人ごとの設定（決算月）。この端末のブラウザにだけ覚える。読めなくても動く
@@ -210,15 +330,7 @@
   try { Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
   const saveSettings = () => { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} };
 
-  // 事業ごとの色（グラデーション）。全期間の売上が大きい事業から順に割り当てるので、会社が変わっても使える
-  const BIZ_COLORS = [
-    ['linear-gradient(135deg, #2f6fd6, #3cc2d9)', 'rgba(47, 111, 214, .3)'],   // 青→水色
-    ['linear-gradient(135deg, #8b5cf6, #ec6fb0)', 'rgba(160, 90, 220, .3)'],   // むらさき→ピンク
-    ['linear-gradient(135deg, #f08a3c, #f6c15b)', 'rgba(240, 140, 60, .3)'],   // オレンジ→こはく
-    ['linear-gradient(135deg, #1f9e7a, #8fd16a)', 'rgba(31, 158, 122, .3)'],   // 緑→黄緑
-    ['linear-gradient(135deg, #e0565b, #f39a6b)', 'rgba(224, 86, 91, .3)'],    // 赤→さんご
-    ['linear-gradient(135deg, #4b5ab8, #8a9cf0)', 'rgba(75, 90, 184, .3)'],    // あい→ラベンダー
-  ];
+  // 事業ごとの色。全期間の売上が大きい事業から順に、グラフの色の順で割り当てる（会社が変わっても使える）
   let bizRank = null;
   const bizList = () => {
     if (bizRank) return bizRank;
@@ -227,8 +339,7 @@
     if (list.length) bizRank = list;
     return list;
   };
-  const bizStyle = b => { const i = bizList().indexOf(b); if (i < 0) return ''; const c = BIZ_COLORS[i % BIZ_COLORS.length];
-    return ' style="--bz:' + c[0] + ';--bzs:' + c[1] + '"'; };
+  const bizStyle = b => { const i = bizList().indexOf(b); return i < 0 ? '' : ' data-bz="' + (i % 5) + '"'; };
 
   let state = { mode: 'month', month: null, fy: null, from: null, to: null, biz: '全事業' };
 
@@ -326,36 +437,36 @@
       picker +
       '<div class="hero-body fade"><div><div class="cap">全店の売上　' + esc(title) + '</div>' +
       '<div class="amount num"><small>¥</small><span id="amt" data-v="' + Math.round(total.sales) + '">0</span></div>' +
-      (tn ? '<p class="pending">' + esc(tn) + '</p>' : '') + '</div>' +
+      (tn ? '<p class="pending-note">' + CLOCK + esc(tn) + '</p>' : '') + '</div>' +
       '<div class="stats">' + st('営業利益', yen(total.profit), total.profit < 0 ? 'neg' : '') + st('営業利益率', pct(total.profitRate)) +
       st('原価率', pct(total.costRate)) + st('人件費率', pct(total.laborRate)) + '</div></div></div></div><main>';
 
     if (probs.length) {
-      h += '<section class="alert"><h2>読めなかった所 ' + probs.length + '件<span class="hint">下の数字に入っていない可能性</span></h2><ul>' +
+      h += '<section class="alert"><h2>読めなかった所が' + probs.length + '件あります（下の数字に入っていません）</h2><ul>' +
         probs.map(p => '<li>' + (multi ? ym(p.month) + ' ' : '') + esc(p.store) + '：' + esc(p.text) + '</li>').join('') + '</ul></section>';
     }
 
     h += '<div class="top">';
     if (total.inStore != null) {
       const inRate = total.deliveryRate == null ? null : 1 - total.deliveryRate;
-      h += '<section class="split"><h2>売上の内訳<span class="hint">デリバリーは手数料を引いた後' + (multi ? '・内訳がある月だけ' : '') + '</span></h2>' +
-        '<div class="bar"><span data-w="' + ((inRate == null ? 1 : inRate) * 100) + '"></span></div>' +
-        '<div class="splitrow"><div><div class="label"><i style="background:var(--grad)"></i>店舗内</div><div class="v num">' + yen(total.inStore) + '</div><div class="p num">' + pct(inRate) + '</div></div>' +
-        '<div><div class="label"><i style="background:var(--grad-warn)"></i>デリバリー</div><div class="v num">' + yen(total.delivery) + '</div><div class="p num">' + pct(total.deliveryRate) + '</div></div></div>' +
-        (total.deliveryOrders ? '<div class="foot">デリバリーの注文額（手数料前）' + yen(total.deliveryOrders) + '</div>' : '') + '</section>';
+      h += '<section class="split"><h2>店舗内とデリバリー</h2>' +
+        '<div class="bar" role="img" aria-label="店舗内 ' + pct(inRate) + '、デリバリー ' + pct(total.deliveryRate) + '"><span data-w="' + ((inRate == null ? 1 : inRate) * 100) + '"></span><span data-w="' + ((total.deliveryRate || 0) * 100) + '"></span></div>' +
+        '<div class="splitrow"><div><div class="label"><i style="background:var(--grad-in)"></i>店舗内</div><div class="v num">' + yen(total.inStore) + '</div><div class="p num">' + pct(inRate) + '</div></div>' +
+        '<div><div class="label"><i style="background:var(--grad-del)"></i>デリバリー</div><div class="v num">' + yen(total.delivery) + '</div><div class="p num">' + pct(total.deliveryRate) + '</div></div></div>' +
+        (total.deliveryOrders ? '<div class="foot"><span>注文額（手数料の前）</span><b>' + yen(total.deliveryOrders) + '</b></div>' : '') + '</section>';
     }
-    h += '<section><h2>月ごとの推移<span class="hint">全店・選んだ期間を濃く表示</span></h2>' + trend(months, sel) + '</section></div>';
+    h += '<section><h2>月ごとの推移（全店）</h2>' + trend(months, sel) + '</section></div>';
 
-    h += '<section><h2>事業ごと' + (multi ? '<span class="hint">選んだ期間の合計</span>' : '') + '</h2>' +
+    h += '<section><h2>事業ごと</h2>' +
       (bizRows.length ? '<div class="list">' + bizRows.map(r => rowHtml(r, multi)).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
     const bizNames = ['全事業', ...bizNamesAll];
     if (!bizNames.includes(state.biz)) state.biz = '全事業';
-    h += '<section><h2>店舗ごと<span class="hint">営業利益の多い順・締め前は下</span></h2><div class="chips" role="group" aria-label="事業" style="padding-top:0;margin-bottom:6px">' +
+    h += '<section><h2>店舗ごと（営業利益の多い順）</h2><div class="chips" role="group" aria-label="事業" style="padding-top:0;margin-bottom:6px">' +
       bizNames.map(b => '<button class="chip" data-biz="' + esc(b) + '"' + bizStyle(b) + ' aria-pressed="' + (b === state.biz) + '">' + (b === '全事業' ? '' : '<span class="dot"></span>') + esc(b) + '</button>').join('') +
       '</div>' + (stores.length ? '<div class="list stores">' + stores.map(r => rowHtml(r, multi)).join('') + '</div>' : '<p class="empty">なし</p>') + '</section>';
 
-    h += '<p class="note">数字は各店のPL表から自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています。月ごとの率はまとめスプシの式で計算し、期や期間の数字は月の金額を足して割り直しています。</p></main>';
+    h += '<details class="about"><summary>？ この数字について</summary><p>各店のPL表から毎朝自動で集めています。社員給が入った店・月だけを「締まった」として、利益と率を出しています（締め前の月は売上だけ）。デリバリーはUber・ロケットの手数料を引いた後の金額です。期や期間の数字は、月の金額を足して率を出し直しています。</p></details></main>';
 
     const keepScroll = (document.getElementById('pchips') || {}).scrollLeft || 0;
     app.innerHTML = h;
@@ -401,9 +512,9 @@
     let pickM = settings.fyEnd;
     const draw = () => {
       sheet.innerHTML = '<div class="grip"></div><h3 id="sheetTitle">設定</h3><p>決算月を選ぶと、「期」の数字がその区切りで出ます。この端末にだけ保存されます。</p>' +
-        '<div class="label" style="font-size:12px;color:var(--sub);margin-bottom:8px">決算月</div><div class="months12">' +
+        '<div class="label">決算月</div><div class="months12">' +
         Array.from({ length: 12 }, (_, i) => i + 1).map(m => '<button data-fyend="' + m + '" aria-pressed="' + (m === pickM) + '">' + m + '月</button>').join('') +
-        '</div><button class="done" id="saveSettings">保存する</button>';
+        '</div><button class="done" id="saveSettings">決算月を保存する</button>';
       sheet.querySelectorAll('[data-fyend]').forEach(b => b.onclick = () => { pickM = Number(b.dataset.fyend); draw(); });
       document.getElementById('saveSettings').onclick = () => { settings.fyEnd = pickM; saveSettings(); state.fy = null; closeSettings(); render(); };
     };
@@ -421,10 +532,9 @@
     return '<div class="row"><div><div class="name">' + esc(r.name) + '</div>' +
       (r.kind === '店舗' ? '<div class="tag"' + bizStyle(r.biz) + '>' + esc(r.biz) + '</div>' : '') + '</div>' +
       '<div class="money num"><div>' + yen(r.sales) + '</div>' +
-      (pending ? '<div class="pending">締め前</div>' : '<div class="' + (r.profit < 0 ? 'neg' : 'pos') + '">' + yen(r.profit) + '</div>') + '</div>' +
-      '<div class="rates">' + (pending ? '売上のみ（家賃・社員給などがまだ入っていない' + (multi ? '期間' : '月') + '）' :
-        '利益率 ' + pct(r.profitRate) + '　原価率 ' + pct(r.costRate) + '　人件費率 ' + pct(r.laborRate)) +
-      (r.deliveryRate ? '<br>デリバリー ' + pct(r.deliveryRate) + '（' + yen(r.delivery) + '）' : '') +
+      (pending ? '<div><span class="badge badge--warning">' + CLOCK + '締め前</span></div>' : '<div class="' + (r.profit < 0 ? 'neg' : 'pos') + '">' + yen(r.profit) + '</div>') + '</div>' +
+      '<div class="rates">' + (pending ? '' : '利益率 ' + pct(r.profitRate) + '　原価率 ' + pct(r.costRate) + '　人件費率 ' + pct(r.laborRate)) +
+      (r.deliveryRate ? (pending ? '' : '<br>') + 'デリバリー ' + pct(r.deliveryRate) + '（' + yen(r.delivery) + '）' : '') +
       (note ? '<br>' + esc(note) : '') + '</div></div>';
   }
 
@@ -440,13 +550,13 @@
     const bw = Math.min(36, (W - 20) / n * 0.6);
     const x = i => 10 + (W - 20) * (i + 0.5) / n;
     let s = '<svg class="trend" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="月ごとの売上と営業利益">' +
-      '<defs><linearGradient id="gOn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent2)"/><stop offset="1" stop-color="var(--accent)"/></linearGradient></defs>';
+      '<defs><linearGradient id="gOn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--chart-4)"/><stop offset="1" stop-color="var(--chart-1)"/></linearGradient></defs>';
     s += '<line x1="0" x2="' + W + '" y1="' + y(0) + '" y2="' + y(0) + '" stroke="var(--line)"/>';
     let yearShown = rows.some(r => r.month.endsWith('-01'));
     rows.forEach((r, i) => {
       const on = sel.includes(r.month);
-      if (r.sales != null) s += '<rect x="' + (x(i) - bw / 2) + '" y="' + y(Math.max(r.sales, 0)) + '" width="' + bw + '" height="' + Math.abs(y(r.sales) - y(0)) + '" rx="3" fill="' + (on ? 'url(#gOn)' : 'var(--bar)') + '"><title>' + ym(r.month) + ' ' + yen(r.sales) + '</title></rect>';
-      if (r.profit != null && r.closed === r.stores) s += '<circle cx="' + x(i) + '" cy="' + y(r.profit) + '" r="' + (on ? 4 : 3) + '" fill="' + (r.profit < 0 ? 'var(--bad)' : 'var(--good)') + '" opacity="' + (on ? 1 : .45) + '"/>';
+      if (r.sales != null) s += '<rect x="' + (x(i) - bw / 2) + '" y="' + y(Math.max(r.sales, 0)) + '" width="' + bw + '" height="' + Math.abs(y(r.sales) - y(0)) + '" rx="3" fill="' + (on ? 'url(#gOn)' : 'var(--line)') + '"><title>' + ym(r.month) + ' ' + yen(r.sales) + '</title></rect>';
+      if (r.profit != null && r.closed === r.stores) s += '<circle cx="' + x(i) + '" cy="' + y(r.profit) + '" r="' + (on ? 4 : 3) + '" fill="' + (r.profit < 0 ? 'var(--danger)' : 'var(--success)') + '" opacity="' + (on ? 1 : .45) + '"/>';
       const mo = Number(r.month.split('-')[1]);
       if ((mo - 1) % step === 0) {
         s += '<text x="' + x(i) + '" y="' + (H - 18) + '" text-anchor="middle">' + mo + '月</text>';
@@ -454,7 +564,7 @@
         yearShown = true;
       }
     });
-    s += '</svg><p class="empty" style="margin:4px 0 0">棒＝売上　●＝営業利益（全店が締まった月だけ）</p>';
+    s += '</svg><div class="legend"><span><i style="background:var(--chart-1)"></i>売上</span><span><i style="background:var(--success);border-radius:50%"></i>営業利益（全店が締まった月）</span></div>';
     return s;
   }
 
