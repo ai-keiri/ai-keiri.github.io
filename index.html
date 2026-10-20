@@ -443,12 +443,16 @@
     const h = new URLSearchParams(location.hash.replace(/^#/, ''));
     const co = h.get('co'), pw = h.get('pw');
     if (!co || !pw) { D = { error: 'ページのアドレスが正しくありません' }; render(); return; }
-    try {
-      const r = await fetch(ENDPOINT + '?out=json&co=' + encodeURIComponent(co) + '&pw=' + encodeURIComponent(pw), { credentials: 'omit' });
-      D = await r.json();
-      if (D.company) document.title = D.company + ' 数字';
-    } catch (e) {
-      D = { error: '数字を読み込めませんでした。通信状態を確かめて、もう一度開いてください' };
+    // Google側がたまに失敗するので、1回だけ自動でやり直す
+    for (let i = 0; i < 2; i++) {
+      try {
+        const r = await fetch(ENDPOINT + '?out=json&co=' + encodeURIComponent(co) + '&pw=' + encodeURIComponent(pw), { credentials: 'omit' });
+        D = await r.json();
+        if (D.company) document.title = D.company + ' 数字';
+        break;
+      } catch (e) {
+        D = { error: '数字を読み込めませんでした。通信状態を確かめて、もう一度開いてください' };
+      }
     }
     render();
   }
