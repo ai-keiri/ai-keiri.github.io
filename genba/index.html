@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>守山大森店 現場確認</title>
+<style>
+:root{--bg:#F2F5FA;--ink:#0B1B33;--nav:#0A2A5E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A101C;--ink:#E7ECF4;--nav:#0D1830}}
+:root[data-theme="dark"]{--bg:#0A101C;--ink:#E7ECF4;--nav:#0D1830}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px "Noto Sans JP",system-ui,sans-serif}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:var(--bg)}
+.ld{position:fixed;inset:0;display:grid;place-items:center;background:var(--nav);color:#fff;font-size:14px;transition:opacity .3s}
+.ld.off{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="ld" id="ld">読み込み中…</div>
+<iframe id="app" credentialless title="守山大森店 現場確認" allow="clipboard-write" src="https://script.google.com/macros/s/AKfycbyl71Gzi239AwueFpAEFLEeII-2LE2AcsC2QGlkAkeG7-SdfHg_PtUBBTwgj4KfG1oX/exec"></iframe>
+<script>
+document.getElementById('app').addEventListener('load',function(){document.getElementById('ld').classList.add('off');});
+setTimeout(function(){document.getElementById('ld').classList.add('off');},8000);
+</script>
+</body>
+</html>
